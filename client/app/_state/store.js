@@ -3,7 +3,7 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 import { cartApi } from "./_services/CartApi";
 import { productApi } from "./_services/ProductApi";
 import { orderApi } from "./_services/OrderApi";
-import { categoryApi} from "./_services/CategoryAPI";
+import { categoryApi} from "./_services/CategoryApi";
 
 export const store = configureStore({
   reducer: {

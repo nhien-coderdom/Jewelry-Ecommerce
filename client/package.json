@@ -25,7 +25,7 @@
     "react-redux": "^9.1.0",
     "react-spinners": "^0.13.8",
     "resend": "^3.2.0",
-    "stripe": "^14.24.0"
+    "stripe": "^14.25.0"
   },
   "devDependencies": {
     "@types/react": "18.2.70",
