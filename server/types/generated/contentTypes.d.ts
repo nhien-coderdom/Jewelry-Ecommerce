@@ -804,8 +804,13 @@ export interface ApiCartCart extends Schema.CollectionType {
     email: Attribute.Email;
     products: Attribute.Relation<
       'api::cart.cart',
-      'oneToMany',
+      'manyToMany',
       'api::product.product'
+    >;
+    cart_items: Attribute.Relation<
+      'api::cart.cart',
+      'oneToMany',
+      'api::cart-item.cart-item'
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
@@ -813,6 +818,46 @@ export interface ApiCartCart extends Schema.CollectionType {
     createdBy: Attribute.Relation<'api::cart.cart', 'oneToOne', 'admin::user'> &
       Attribute.Private;
     updatedBy: Attribute.Relation<'api::cart.cart', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+  };
+}
+
+export interface ApiCartItemCartItem extends Schema.CollectionType {
+  collectionName: 'cart_items';
+  info: {
+    singularName: 'cart-item';
+    pluralName: 'cart-items';
+    displayName: 'cartItem';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    quantity: Attribute.Integer;
+    cart: Attribute.Relation<
+      'api::cart-item.cart-item',
+      'manyToOne',
+      'api::cart.cart'
+    >;
+    product: Attribute.Relation<
+      'api::cart-item.cart-item',
+      'oneToOne',
+      'api::product.product'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::cart-item.cart-item',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::cart-item.cart-item',
+      'oneToOne',
+      'admin::user'
+    > &
       Attribute.Private;
   };
 }
@@ -896,6 +941,7 @@ export interface ApiProductProduct extends Schema.CollectionType {
     singularName: 'product';
     pluralName: 'products';
     displayName: 'Product';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -917,6 +963,17 @@ export interface ApiProductProduct extends Schema.CollectionType {
       'api::product.product',
       'manyToMany',
       'api::order.order'
+    >;
+    stock: Attribute.Integer;
+    carts: Attribute.Relation<
+      'api::product.product',
+      'manyToMany',
+      'api::cart.cart'
+    >;
+    cart_item: Attribute.Relation<
+      'api::product.product',
+      'oneToOne',
+      'api::cart-item.cart-item'
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
@@ -955,6 +1012,7 @@ declare module '@strapi/types' {
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
       'api::cart.cart': ApiCartCart;
+      'api::cart-item.cart-item': ApiCartItemCartItem;
       'api::category.category': ApiCategoryCategory;
       'api::order.order': ApiOrderOrder;
       'api::product.product': ApiProductProduct;
