@@ -1,0 +1,20 @@
+# Node modules
+node_modules/
+npm-debug.log*
+
+# Strapi
+.strapi/
+.tmp/
+.cache/
+build/
+dist/
+
+# Environment
+.env
+
+# Database
+*.sqlite
+*.db
+
+# OS
+.DS_Store

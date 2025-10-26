@@ -7,9 +7,10 @@ export const productApi = createApi({
   reducerPath: "productApi",
   baseQuery: fetchBaseQuery({
     baseUrl: apiUrl,
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
+    // Bỏ Authorization header vì đang dùng public access
+    // headers: {
+    //   Authorization: `Bearer ${apiKey}`,
+    // },
   }),
   endpoints: (builder) => ({
     getLatestProducts: builder.query({

@@ -7,9 +7,10 @@ export const orderApi = createApi({
   reducerPath: "orderApi",
   baseQuery: fetchBaseQuery({
     baseUrl: apiUrl,
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
+    // Bỏ Authorization header vì đang dùng public access
+    // headers: {
+    //   Authorization: `Bearer ${apiKey}`,
+    // },
   }),
   endpoints: (builder) => ({
     createOrder: builder.mutation({
