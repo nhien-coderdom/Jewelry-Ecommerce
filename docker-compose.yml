@@ -1,0 +1,70 @@
+services:
+  # Strapi Backend
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: jewelry-server
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      DATABASE_CLIENT: sqlite
+      DATABASE_FILENAME: .tmp/data.db
+      HOST: 0.0.0.0
+      PORT: 1337
+      APP_KEYS: ${APP_KEYS}
+      API_TOKEN_SALT: ${API_TOKEN_SALT}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+      TRANSFER_TOKEN_SALT: ${TRANSFER_TOKEN_SALT}
+      JWT_SECRET: ${JWT_SECRET}
+      CLOUDINARY_NAME: ${CLOUDINARY_NAME}
+      CLOUDINARY_KEY: ${CLOUDINARY_KEY}
+      CLOUDINARY_SECRET: ${CLOUDINARY_SECRET}
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+      - strapi_uploads:/app/public/uploads
+    ports:
+      - "1337:1337"
+    networks:
+      - jewelry-network
+    command: npm run dev
+
+  # Next.js Frontend
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: jewelry-client
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_REST_API_KEY: ${NEXT_PUBLIC_REST_API_KEY}
+      NEXT_PUBLIC_REST_API_URL: ${NEXT_PUBLIC_REST_API_URL}
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+      CLERK_SECRET_KEY: ${CLERK_SECRET_KEY}
+      NEXT_PUBLIC_CLERK_SIGN_IN_URL: ${NEXT_PUBLIC_CLERK_SIGN_IN_URL}
+      NEXT_PUBLIC_CLERK_SIGN_UP_URL: ${NEXT_PUBLIC_CLERK_SIGN_UP_URL}
+      NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: ${NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL}
+      NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: ${NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL}
+      NEXT_PUBLIC_STRIPE_PUBLISHER_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHER_KEY}
+      NEXT_PUBLIC_STRIPE_SECRET_KEY: ${NEXT_PUBLIC_STRIPE_SECRET_KEY}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
+    networks:
+      - jewelry-network
+    depends_on:
+      - server
+    command: npm run dev
+
+volumes:
+  strapi_uploads:
+
+networks:
+  jewelry-network:
+    driver: bridge

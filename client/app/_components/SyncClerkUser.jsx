@@ -3,26 +3,31 @@
 import { useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 
-export default function SyncClerkUser() {
+const SyncClerkUser = () => {
   const { isSignedIn, user } = useUser();
 
   useEffect(() => {
+
     if (isSignedIn && user) {
       const syncUser = async () => {
         const data = {
-          clerkUserID: user.id, // trùng với field ở Strapi
-          email: user.primaryEmailAddress?.emailAddress,
+          clerkUserID: user.id,
+          email: user.emailAddresses[0]?.emailAddress,
           username: user.username || user.firstName || "Anonymous",
+          firstName: user.firstName,
+          lastName: user.lastName,
+          provider: user.externalAccounts?.[0]?.provider || "clerk",
+          ipAddress: user.lastActiveDevice?.ipAddress || "",
+          createdAt: user.createdAt,
         };
 
         try {
-          const res = await fetch("http://localhost:1337/api/users/sync-clerk", {
+          const res = await fetch("http://localhost:1337/api/sync-clerk", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
           });
+
 
           const result = await res.json();
           console.log("✅ Synced user to Strapi:", result);
@@ -35,5 +40,6 @@ export default function SyncClerkUser() {
     }
   }, [isSignedIn, user]);
 
-  return null; // Component này không hiển thị gì, chỉ chạy sync
+  return null;
 }
+export default SyncClerkUser;

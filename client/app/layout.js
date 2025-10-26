@@ -6,6 +6,7 @@ import Footer from "./_components/Footer";
 import "./globals.css";
 import { Provider } from "react-redux";
 import { store } from "./_state/store";
+import  SyncClerkUser  from "./_components/SyncClerkUser";
 
 export default function RootLayout({ children }) {
   return (
@@ -18,6 +19,7 @@ export default function RootLayout({ children }) {
         <html lang="en">
           <body className="bg-gray-900">
             <Header />
+            <SyncClerkUser />
             {children}
             <Footer />
           </body>
