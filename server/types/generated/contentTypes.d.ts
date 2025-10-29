@@ -917,6 +917,11 @@ export interface ApiOrderOrder extends Schema.CollectionType {
       'manyToMany',
       'api::product.product'
     >;
+    order_items: Attribute.Relation<
+      'api::order.order',
+      'oneToMany',
+      'api::order-item.order-item'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -928,6 +933,56 @@ export interface ApiOrderOrder extends Schema.CollectionType {
       Attribute.Private;
     updatedBy: Attribute.Relation<
       'api::order.order',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiOrderItemOrderItem extends Schema.CollectionType {
+  collectionName: 'order_items';
+  info: {
+    singularName: 'order-item';
+    pluralName: 'order-items';
+    displayName: 'OrderItem';
+    description: 'Items in an order with quantity and price';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    quantity: Attribute.Integer &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      > &
+      Attribute.DefaultTo<1>;
+    price_at_time: Attribute.Decimal & Attribute.Required;
+    order: Attribute.Relation<
+      'api::order-item.order-item',
+      'manyToOne',
+      'api::order.order'
+    >;
+    product: Attribute.Relation<
+      'api::order-item.order-item',
+      'manyToOne',
+      'api::product.product'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::order-item.order-item',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::order-item.order-item',
       'oneToOne',
       'admin::user'
     > &
@@ -1015,6 +1070,7 @@ declare module '@strapi/types' {
       'api::cart-item.cart-item': ApiCartItemCartItem;
       'api::category.category': ApiCategoryCategory;
       'api::order.order': ApiOrderOrder;
+      'api::order-item.order-item': ApiOrderItemOrderItem;
       'api::product.product': ApiProductProduct;
     }
   }

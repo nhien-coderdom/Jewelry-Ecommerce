@@ -1,7 +1,7 @@
 "use client";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useGetCartItemsQuery } from "../_state/_services/CartApi";
 import Cart from "../_components/Cart";
 
@@ -9,6 +9,7 @@ const Header = () => {
   const [cartOpen, setCartOpen] = useState(false);
   const { user } = useUser();
   const email = user?.primaryEmailAddress?.emailAddress;
+  const cartRef = useRef(null);
 
   // ⚙️ Thêm skip để tránh gọi API khi user chưa load
   const { data, isSuccess, isFetching } = useGetCartItemsQuery(email, {
@@ -22,6 +23,23 @@ const Header = () => {
   useEffect(() => {
     setIsSign(pathName === "/sign-in" || pathName === "/sign-up");
   }, [pathName]);
+
+  // 👆 Click outside để đóng cart
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (cartRef.current && !cartRef.current.contains(event.target)) {
+        setCartOpen(false);
+      }
+    };
+
+    if (cartOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [cartOpen]);
 
   // 🧮 Lấy số lượng sản phẩm trong giỏ (nếu có)
   const cartCount =
@@ -75,7 +93,7 @@ const Header = () => {
               ) : (
                 <div className="flex items-center gap-6 relative">
                   {/* Cart Icon */}
-                  <div className="relative">
+                  <div className="relative" ref={cartRef}>
                     <button
                       className="relative"
                       onClick={() => setCartOpen(!cartOpen)}
@@ -117,6 +135,7 @@ const Header = () => {
                           data={
                             data?.data?.[0]?.attributes?.cart_items?.data || []
                           }
+                          onClose={() => setCartOpen(false)}
                         />
                       </div>
                     )}

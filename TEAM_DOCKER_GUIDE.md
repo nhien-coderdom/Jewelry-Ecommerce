@@ -58,6 +58,7 @@ docker-compose up -d
 **Mở trình duyệt và truy cập:**
 
 1. **Frontend (khách hàng):** http://localhost:3000
+<!-- docker-compose restart client -->
 2. **Strapi Admin (quản lý):** http://localhost:1337/admin
 
 **Nếu thấy website hiện lên → THÀNH CÔNG! 🎉**
