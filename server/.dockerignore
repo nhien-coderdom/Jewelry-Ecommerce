@@ -1,20 +1,53 @@
 # Node modules
 node_modules/
 npm-debug.log*
+yarn-error.log*
 
 # Strapi
 .strapi/
 .tmp/
 .cache/
-build/
-dist/
+# Don't ignore build/ - we need it in production
 
-# Environment
+# Environment - keep .env.example
 .env
+.env.local
+.env.*.local
 
 # Database
 *.sqlite
 *.db
+data.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+!README.md
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
 
 # OS
 .DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+Dockerfile.dev
+Dockerfile.prod
+.dockerignore
+docker-compose*.yml
+
+# Testing
+coverage/
+.nyc_output/
+
+# Logs
+logs/
+*.log
