@@ -30,10 +30,13 @@
 ### 3. Tạo Server Service
 
 1. Click "New" → "GitHub Repo" → Chọn repo `Jewelry-Ecommerce`
-2. Settings:
-   - **Root Directory**: `server`
+2. **⚠️ QUAN TRỌNG** - Vào Settings → Build section:
+   - **Root Directory**: `server` ← BẮT BUỘC!
    - **Build Command**: `npm install && npm run build`
    - **Start Command**: `npm start`
+3. Click Save
+
+**Lưu ý:** Không set Root Directory sẽ bị lỗi "Error creating build plan"!
 
 ### 4. Configure Environment Variables
 
@@ -324,11 +327,22 @@ git push origin feature/phase2
 
 ## 🐛 Troubleshooting
 
+### ❌ Lỗi: "Error creating build plan with fallback"
+**Nguyên nhân:** Railway không tìm thấy `package.json` vì đang build từ root directory.
+
+**Giải pháp:**
+1. Vào Railway service → **Settings**
+2. Scroll xuống **Build** section
+3. Set **Root Directory** = `server`
+4. Click **Save**
+5. Click **Redeploy**
+
 ### Backend không deploy:
-1. Check Railway Token trong GitHub Secrets
-2. Check build logs trong GitHub Actions
-3. Verify environment variables trong Railway
-4. Check database connection
+1. ✅ **Check Root Directory** - Phải set `server`!
+2. Check Railway Token trong GitHub Secrets
+3. Check build logs trong GitHub Actions
+4. Verify environment variables trong Railway
+5. Check database connection
 
 ### Frontend không deploy:
 1. Check Vercel Token trong GitHub Secrets

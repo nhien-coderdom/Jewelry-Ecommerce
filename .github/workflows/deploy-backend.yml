@@ -60,7 +60,9 @@ jobs:
         working-directory: ./server
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: railway up --service server
+        run: |
+          railway link ${{ secrets.RAILWAY_PROJECT_ID }}
+          railway up
 
       - name: Deployment Success
         if: success()
