@@ -190,19 +190,7 @@ docker-compose exec server npm test
 
 ## 🚢 Deployment
 
-### Deploy to Railway (Recommended)
-
-Xem hướng dẫn chi tiết: **[RAILWAY_DEPLOY_GUIDE.md](./RAILWAY_DEPLOY_GUIDE.md)**
-
-Quick steps:
-1. Push code to GitHub
-2. Connect Railway to your GitHub repo
-3. Create 2 services: Server (from `/server`) và Client (from `/client`)
-4. Add PostgreSQL database
-5. Configure environment variables
-6. Deploy!
-
-### Production Build (Docker)
+### Production Build
 
 1. Update environment variables for production
 2. Build production images:
@@ -210,7 +198,7 @@ Quick steps:
 docker-compose -f docker-compose.prod.yml build
 ```
 
-3. Deploy to your hosting service (AWS, DigitalOcean, Railway, etc.)
+3. Deploy to your hosting service (AWS, DigitalOcean, etc.)
 
 ## 🤝 Contributing
 
