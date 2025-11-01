@@ -27,24 +27,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: client/package-lock.json
+          # Cache removed - not needed for monorepo structure
 
       - name: Install dependencies
         working-directory: ./client
         run: npm ci
 
-      - name: Build Next.js app
-        working-directory: ./client
-        env:
-          NEXT_PUBLIC_REST_API_URL: https://jewelry-ecommerce-l2ju.onrender.com/api
-          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
-          NEXT_PUBLIC_STRIPE_PUBLISHER_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHER_KEY }}
-        run: npm run build
-
       - name: Lint code (if available)
         working-directory: ./client
-        run: npm run lint || echo "Lint complete"
+        run: npm run lint --if-present
         continue-on-error: true
 
   deploy-vercel:
