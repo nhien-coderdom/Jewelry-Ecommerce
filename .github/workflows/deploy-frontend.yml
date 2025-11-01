@@ -27,7 +27,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          # Cache removed - not needed for monorepo structure
 
       - name: Install dependencies
         working-directory: ./client
@@ -38,51 +37,28 @@ jobs:
         run: npm run lint --if-present
         continue-on-error: true
 
-  deploy-vercel:
-    name: Deploy to Vercel
-    needs: test-frontend
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feature/phase2')
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install Vercel CLI
-        run: npm install -g vercel
-
-      - name: Pull Vercel Environment Information
-        working-directory: ./client
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: vercel pull --yes --environment=production --token=$VERCEL_TOKEN
-
-      - name: Build Project Artifacts
-        working-directory: ./client
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: vercel build --prod --token=$VERCEL_TOKEN
-
-      - name: Deploy to Vercel
-        working-directory: ./client
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
-
-      - name: Deployment Success
-        if: success()
-        run: |
-          echo "✅ Frontend deployed to Vercel successfully!"
-          echo "Check: https://vercel.com/${{ secrets.VERCEL_ORG_ID }}/${{ secrets.VERCEL_PROJECT_ID }}"
-
-      - name: Deployment Failed
-        if: failure()
-        run: |
-          echo "❌ Frontend deployment failed!"
-          echo "Check logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+  # Deploy job disabled until GitHub Secrets are configured
+  # To enable: Add VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID to GitHub Secrets
+  # deploy-vercel:
+  #   name: Deploy to Vercel
+  #   needs: test-frontend
+  #   runs-on: ubuntu-latest
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  #   
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Install Vercel CLI
+  #       run: npm install -g vercel
+  #
+  #     - name: Deploy to Vercel
+  #       working-directory: ./client
+  #       env:
+  #         VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  #         VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  #         VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  #       run: |
+  #         vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+  #         vercel build --prod --token=$VERCEL_TOKEN
+  #         vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN

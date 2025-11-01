@@ -11,9 +11,6 @@ on:
 jobs:
   test-backend:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./server
     
     steps:
     - name: Checkout code
@@ -23,43 +20,31 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-        # Cache removed - not needed for monorepo structure
     
     - name: Install dependencies
+      working-directory: ./server
       run: npm ci
     
     - name: Run linting
+      working-directory: ./server
       run: npm run lint --if-present
     
     - name: Build Strapi
+      working-directory: ./server
       run: npm run build
     
     - name: Run tests
+      working-directory: ./server
       run: npm test --if-present
 
-  deploy-render:
-    needs: test-backend
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Deploy to Render
-      uses: johnbeynon/render-deploy-action@v0.0.8
-      with:
-        service-id: ${{ secrets.RENDER_SERVICE_ID }}
-        api-key: ${{ secrets.RENDER_API_KEY }}
-        wait-for-success: true
-
-  # Alternative: Trigger Render webhook
-  trigger-render-deploy:
-    needs: test-backend
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
-    steps:
-    - name: Trigger Render Deploy
-      run: |
-        curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+  # Deploy job disabled until GitHub Secrets are configured
+  # To enable: Add RENDER_DEPLOY_HOOK_URL to GitHub Secrets
+  # deploy-render:
+  #   needs: test-backend
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  #   
+  #   steps:
+  #   - name: Trigger Render Deploy
+  #     run: |
+  #       curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
