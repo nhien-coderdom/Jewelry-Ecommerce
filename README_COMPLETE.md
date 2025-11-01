@@ -571,7 +571,7 @@ LOCAL:
 - Backend:  http://localhost:1337/admin
 
 PRODUCTION:
-- Frontend: https://jewelry-ecommerce-xxx.vercel.app
+- Frontend: jewelry-ecommerce-n2gp5kf4c-joppys-projects.vercel.app
 - Backend:  https://jewelry-ecommerce-l2ju.onrender.com
 - Admin:    https://jewelry-ecommerce-l2ju.onrender.com/admin
 ```
