@@ -1,0 +1,50 @@
+name: Deploy Backend to Render
+
+on:
+  push:
+    branches: [ main, feature/phase2 ]
+    paths: [ 'server/**' ]
+  pull_request:
+    branches: [ main ]
+    paths: [ 'server/**' ]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    
+    - name: Install dependencies
+      working-directory: ./server
+      run: npm ci
+    
+    - name: Run linting
+      working-directory: ./server
+      run: npm run lint --if-present
+    
+    - name: Build Strapi
+      working-directory: ./server
+      run: npm run build
+    
+    - name: Run tests
+      working-directory: ./server
+      run: npm test --if-present
+
+  # Deploy job disabled until GitHub Secrets are configured
+  # To enable: Add RENDER_DEPLOY_HOOK_URL to GitHub Secrets
+  # deploy-render:
+  #   needs: test-backend
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  #   
+  #   steps:
+  #   - name: Trigger Render Deploy
+  #     run: |
+  #       curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}

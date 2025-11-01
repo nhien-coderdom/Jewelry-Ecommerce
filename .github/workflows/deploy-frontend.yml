@@ -1,0 +1,64 @@
+name: Deploy Frontend to Vercel
+
+on:
+  push:
+    branches:
+      - main
+      - feature/phase2
+    paths:
+      - 'client/**'
+      - '.github/workflows/deploy-frontend.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'client/**'
+
+jobs:
+  test-frontend:
+    name: Test Frontend
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        working-directory: ./client
+        run: npm ci
+
+      - name: Lint code (if available)
+        working-directory: ./client
+        run: npm run lint --if-present
+        continue-on-error: true
+
+  # Deploy job disabled until GitHub Secrets are configured
+  # To enable: Add VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID to GitHub Secrets
+  # deploy-vercel:
+  #   name: Deploy to Vercel
+  #   needs: test-frontend
+  #   runs-on: ubuntu-latest
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  #   
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Install Vercel CLI
+  #       run: npm install -g vercel
+  #
+  #     - name: Deploy to Vercel
+  #       working-directory: ./client
+  #       env:
+  #         VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  #         VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  #         VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  #       run: |
+  #         vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+  #         vercel build --prod --token=$VERCEL_TOKEN
+  #         vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
