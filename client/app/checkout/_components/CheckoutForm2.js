@@ -32,6 +32,7 @@ const CheckoutForm = ({ amount }) => {
       // Tạo order với OrderItem relationship
       await createOrder({
         data: {
+          clerkUserId: user.id, // ✅ FIX: Thêm clerkUserId theo yêu cầu của server
           email: user.primaryEmailAddress?.emailAddress,
           Username: user.fullName,
           amount: Number(amount),

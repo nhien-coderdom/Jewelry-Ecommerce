@@ -7,15 +7,16 @@ module.exports = createCoreController('api::order.order', ({ strapi }) => ({
   async create(ctx) {
     const { clerkUserId, ...orderData } = ctx.request.body.data || {};
 
-    if (!clerkUserId) {
-      return ctx.badRequest('clerkUserId is required');
-    }
+    // ⚠️ TEMPORARY: Remove validation for demo
+    // if (!clerkUserId) {
+    //   return ctx.badRequest('clerkUserId is required');
+    // }
 
-    // Tạo order mới kèm clerkUserId
+    // Tạo order mới (với hoặc không có clerkUserId)
     const entity = await strapi.db.query('api::order.order').create({
       data: {
         ...orderData,
-        clerkUserId,
+        ...(clerkUserId && { clerkUserId }), // Chỉ thêm nếu có
       },
     });
 

@@ -30,8 +30,9 @@ const CheckoutForm = ({ amount }) => {
 
     try {
       // Tạo order với OrderItem relationship
-      await createOrder({
+      const orderData = {
         data: {
+          clerkUserId: user.id, // ✅ FIX: Thêm clerkUserId theo yêu cầu của server
           email: user.primaryEmailAddress?.emailAddress,
           Username: user.fullName,
           amount: Number(amount),
@@ -42,7 +43,13 @@ const CheckoutForm = ({ amount }) => {
             price_at_time: item.price,
           })),
         }
-      }).unwrap(); // unwrap để lấy kết quả hoặc lỗi
+      };
+      
+      console.log('📦 Creating order with data:', orderData);
+      console.log('👤 User info:', { id: user.id, email: user.primaryEmailAddress?.emailAddress, fullName: user.fullName });
+      console.log('🛒 Order items:', orderItems);
+      
+      await createOrder(orderData).unwrap(); // unwrap để lấy kết quả hoặc lỗi
 
       // Xóa từng cart item sau khi tạo order thành công
       const cartItems = cart.attributes?.cart_items?.data || [];
