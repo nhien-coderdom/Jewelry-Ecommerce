@@ -11,6 +11,10 @@
   },
   "pluginOptions": {},
   "attributes": {
+    "clerkUserId": {
+      "type": "string",
+      "required": true
+    },
     "email": {
       "type": "email"
     },
