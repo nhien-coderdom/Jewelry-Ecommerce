@@ -67,44 +67,88 @@ const CheckoutForm = ({ amount }) => {
 
   //xử lý submit form thanh toán
   const handleSubmit = async (event) => {
-    event.preventDefault(); // Ngăn chặn hành vi mặc định của form
-    if (!stripe || !elements) return; // Kiểm tra Stripe và Elements đã sẵn sàng chưa
-    setLoading(true);
-    setErrorMessage("");
+  event.preventDefault();
+  
+  if (!stripe || !elements) {
+    console.error('❌ Stripe not loaded');
+    return;
+  }
+  
+  setLoading(true);
+  setErrorMessage("");
 
-    try {
-      // Bước 1: Tạo đơn hàng và xóa giỏ hàng
-      await createOrderAndUpdateCart();
-
-      // Bước 2: Gửi email xác nhận
-      await sendEmail();
-
-      // Bước 3: Xác thực PaymentElement
-      const { error: submitError } = await elements.submit();
-      if (submitError) throw submitError;
-
-      // Bước 4: Tạo payment intent
-      const { data: clientSecret } = await axios.post("/api/create-payment-intent", {
-        data: { amount: Number(amount) },
-      });
-
-      // Bước 5: Xác nhận thanh toán
-      const result = await stripe.confirmPayment({
-        clientSecret,
-        elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/payment-confirm`,
-        },
-      });
-
-      if (result.error) throw result.error;
-    } catch (err) {
-      console.error("Payment error:", err);
-      setErrorMessage(err.message || "Something went wrong");
-    } finally {
-      setLoading(false);
+  try {
+    console.log('🚀 Starting payment process...');
+    console.log('💵 Amount to charge:', amount);
+    
+    // Bước 1: Validate PaymentElement
+    console.log('📝 Validating payment form...');
+    const { error: submitError } = await elements.submit();
+    if (submitError) {
+      console.error('❌ Form validation error:', submitError);
+      throw submitError;
     }
-  };
+    console.log('✅ Form validated');
+
+    // Bước 2: Tạo payment intent
+    console.log('💳 Creating payment intent...');
+    const response = await axios.post("/api/create-payment-intent", {
+      data: { amount: Number(amount) * 100 },
+    });
+    
+    // ✅ FIX: Lấy clientSecret string từ object
+    const clientSecret = response.data.clientSecret;
+    console.log('🔑 Client secret:', clientSecret);
+    console.log('✅ Payment intent created');
+
+    // Bước 3: Xác nhận thanh toán
+    console.log('🔐 Confirming payment with Stripe...');
+    const result = await stripe.confirmPayment({
+      clientSecret, // ✅ Giờ đây là string
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/payment-confirm`,
+      },
+      redirect: "if_required",
+    });
+
+    // Kiểm tra lỗi thanh toán
+    if (result.error) {
+      console.error('❌ Payment failed:', result.error);
+      throw result.error;
+    }
+
+    console.log('💰 Payment result:', result);
+    console.log('📊 Payment status:', result.paymentIntent?.status);
+
+    // ✅ Bước 4: CHỈ TẠO ORDER KHI THANH TOÁN THÀNH CÔNG
+    if (result.paymentIntent?.status === "succeeded") {
+      console.log('🎉 Payment succeeded! Processing order...');
+      
+      try {
+        await createOrderAndUpdateCart();
+        console.log('✅ Order saved to database');
+        
+        await sendEmail();
+        
+        console.log('🔄 Redirecting to confirmation page...');
+        window.location.href = "/payment-confirm";
+      } catch (orderError) {
+        console.error('❌ Error processing order after payment:', orderError);
+        setErrorMessage('Payment succeeded but order processing failed. Please contact support.');
+      }
+    } else {
+      console.warn('⚠️ Unexpected payment status:', result.paymentIntent?.status);
+      throw new Error(`Payment status: ${result.paymentIntent?.status || 'unknown'}`);
+    }
+
+  } catch (err) {
+    console.error("❌ Payment process error:", err);
+    setErrorMessage(err.message || "Something went wrong. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Lấy danh sách sản phẩm trong đơn hàng từ cartData
   useEffect(() => {
