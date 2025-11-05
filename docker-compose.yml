@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_USER: strapi
       POSTGRES_PASSWORD: strapi
-      POSTGRES_DB: jewelry_db
+      POSTGRES_DB: strapi  # ✅ FIX: Đổi từ jewelry_db thành strapi để khớp với config
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -32,7 +32,7 @@ services:
       DATABASE_CLIENT: postgres
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
-      DATABASE_NAME: jewelry_db
+      DATABASE_NAME: strapi
       DATABASE_USERNAME: strapi
       DATABASE_PASSWORD: strapi
       DATABASE_SSL: false

@@ -909,6 +909,7 @@ export interface ApiOrderOrder extends Schema.CollectionType {
     draftAndPublish: true;
   };
   attributes: {
+    clerkUserId: Attribute.String & Attribute.Required;
     email: Attribute.Email;
     Username: Attribute.String;
     amount: Attribute.Float;
