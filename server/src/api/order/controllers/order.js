@@ -4,41 +4,64 @@ const { createCoreController } = require('@strapi/strapi').factories;
 
 module.exports = createCoreController('api::order.order', ({ strapi }) => ({
   async create(ctx) {
-    const { clerkUserId, products, order_items, ...orderData } = ctx.request.body.data || {};
+  const { clerkUserId, products, order_items, ...orderData } = ctx.request.body.data || {};
 
-    if (!clerkUserId) return ctx.badRequest('clerkUserId is required');
-    if (!products || !Array.isArray(products)) return ctx.badRequest('products is required');
+  if (!clerkUserId) return ctx.badRequest('clerkUserId is required');
+  if (!products || !Array.isArray(products)) return ctx.badRequest('products is required');
+  if (!order_items || !Array.isArray(order_items)) return ctx.badRequest('order_items is required');
 
-    try {
-      // ✅ B1: tạo Order
-      const order = await strapi.entityService.create('api::order.order', {
+  try {
+    // ✅ B1: tạo Order
+    const order = await strapi.entityService.create('api::order.order', {
+      data: {
+        ...orderData,
+        clerkUserId,
+        products,
+      },
+    });
+
+    // ✅ B2: tạo từng Order Item + kiểm tra/trừ stock
+    for (const item of order_items) {
+      // Lấy thông tin sản phẩm
+      const product = await strapi.entityService.findOne('api::product.product', item.product, {
+        fields: ['stock', 'title'],
+      });
+
+      if (!product) {
+        throw new Error(`Product not found: ${item.product}`);
+      }
+
+      // ✅ Kiểm tra còn hàng không
+      if (product.stock < item.quantity) {
+        throw new Error(`Not enough stock for ${product.title}`);
+      }
+
+      // ✅ Tạo Order Item
+      await strapi.entityService.create('api::order-item.order-item', {
         data: {
-          ...orderData,
-          clerkUserId,
-          products, // chỉ array ID
+          product: item.product,
+          quantity: item.quantity,
+          price_at_time: item.price_at_time,
+          order: order.id,
         },
       });
 
-      // ✅ B2: tạo từng item trong order_items
-      if (order_items?.length > 0) {
-        for (const item of order_items) {
-          await strapi.entityService.create('api::order-item.order-item', {
-            data: {
-              product: item.product,
-              quantity: item.quantity,
-              price_at_time: item.price_at_time,
-              order: order.id,
-            },
-          });
-        }
-      }
-
-      return order;
-    } catch (err) {
-      console.error('🔥 Order Create Error:', err);
-      return ctx.internalServerError('Failed to create order');
+      // ✅ Trừ stock sản phẩm
+      await strapi.entityService.update('api::product.product', item.product, {
+        data: {
+          stock: product.stock - item.quantity,
+        },
+      });
     }
-  },
+
+    return order;
+
+  } catch (err) {
+    console.error("🔥 Order Creation Error:", err);
+
+    return ctx.internalServerError(err.message || 'Failed to create order');
+  }
+},
 
   // GET /api/orders?clerkUserId=x
   async find(ctx) {
