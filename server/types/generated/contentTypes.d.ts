@@ -909,8 +909,9 @@ export interface ApiOrderOrder extends Schema.CollectionType {
     draftAndPublish: true;
   };
   attributes: {
+    clerkUserId: Attribute.String;
     email: Attribute.Email;
-    Username: Attribute.String;
+    username: Attribute.String;
     amount: Attribute.Float;
     products: Attribute.Relation<
       'api::order.order',

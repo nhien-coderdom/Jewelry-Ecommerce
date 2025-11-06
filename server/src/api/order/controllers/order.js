@@ -3,59 +3,91 @@
 const { createCoreController } = require('@strapi/strapi').factories;
 
 module.exports = createCoreController('api::order.order', ({ strapi }) => ({
-  // 🟢 Override: CREATE
   async create(ctx) {
-    const { clerkUserId, ...orderData } = ctx.request.body.data || {};
+  const { clerkUserId, products, order_items, ...orderData } = ctx.request.body.data || {};
 
-    if (!clerkUserId) {
-      return ctx.badRequest('clerkUserId is required');
-    }
+  if (!clerkUserId) return ctx.badRequest('clerkUserId is required');
+  if (!products || !Array.isArray(products)) return ctx.badRequest('products is required');
+  if (!order_items || !Array.isArray(order_items)) return ctx.badRequest('order_items is required');
 
-    // Tạo order mới kèm clerkUserId
-    const entity = await strapi.db.query('api::order.order').create({
+  try {
+    // ✅ B1: tạo Order
+    const order = await strapi.entityService.create('api::order.order', {
       data: {
         ...orderData,
         clerkUserId,
+        products,
       },
     });
 
-    return entity;
-  },
+    // ✅ B2: tạo từng Order Item + kiểm tra/trừ stock
+    for (const item of order_items) {
+      // Lấy thông tin sản phẩm
+      const product = await strapi.entityService.findOne('api::product.product', item.product, {
+        fields: ['stock', 'title'],
+      });
 
-  // 🟢 Override: FIND (GET /api/orders)
-  async find(ctx) {
-    const { clerkUserId } = ctx.query;
+      if (!product) {
+        throw new Error(`Product not found: ${item.product}`);
+      }
 
-    if (!clerkUserId) {
-      return ctx.badRequest('clerkUserId is required in query');
+      // ✅ Kiểm tra còn hàng không
+      if (product.stock < item.quantity) {
+        throw new Error(`Not enough stock for ${product.title}`);
+      }
+
+      // ✅ Tạo Order Item
+      await strapi.entityService.create('api::order-item.order-item', {
+        data: {
+          product: item.product,
+          quantity: item.quantity,
+          price_at_time: item.price_at_time,
+          order: order.id,
+        },
+      });
+
+      // ✅ Trừ stock sản phẩm
+      await strapi.entityService.update('api::product.product', item.product, {
+        data: {
+          stock: product.stock - item.quantity,
+        },
+      });
     }
 
-    const entities = await strapi.db.query('api::order.order').findMany({
+    return order;
+
+  } catch (err) {
+    console.error("🔥 Order Creation Error:", err);
+
+    return ctx.internalServerError(err.message || 'Failed to create order');
+  }
+},
+
+  // GET /api/orders?clerkUserId=x
+  async find(ctx) {
+    const { clerkUserId } = ctx.query;
+    if (!clerkUserId) return ctx.badRequest('clerkUserId is required');
+
+    return await strapi.db.query('api::order.order').findMany({
       where: { clerkUserId },
+      populate: ['products', 'order_items', 'order_items.product'],
       orderBy: { createdAt: 'desc' },
     });
-
-    return entities;
   },
 
-  // 🟢 Override: FIND ONE (GET /api/orders/:id)
   async findOne(ctx) {
     const { id } = ctx.params;
     const { clerkUserId } = ctx.query;
 
-    if (!clerkUserId) {
-      return ctx.badRequest('clerkUserId is required in query');
-    }
+    if (!clerkUserId) return ctx.badRequest('clerkUserId is required');
 
-    const entity = await strapi.db.query('api::order.order').findOne({
+    const order = await strapi.db.query('api::order.order').findOne({
       where: { id, clerkUserId },
+      populate: ['products', 'order_items', 'order_items.product'],
     });
 
-    if (!entity) {
-      return ctx.notFound('Order not found or not authorized');
-    }
+    if (!order) return ctx.notFound('Order not found');
 
-    return entity;
-  },
+    return order;
+  }
 }));
-

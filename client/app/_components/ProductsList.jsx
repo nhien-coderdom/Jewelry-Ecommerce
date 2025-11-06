@@ -1,56 +1,61 @@
 "use client";
-import React from "react";
-import Image from "next/image"; // Use Next.js Image component for optimization
+import Image from "next/image";
 import Link from "next/link";
 import { List } from "lucide-react";
+import PropTypes from "prop-types";
 
-const ProductsList = ({ products }) => {
-  if (!products || products.length === 0) {
-    return <div className="text-gray-500">Không có sản phẩm nào.</div>;
-  }
+const ProductsList = ({ products, searchTerm }) => {
+  const keyword = searchTerm?.toLowerCase() || "";
+
+  const filteredProducts = products?.filter((product) => {
+    const title = product?.attributes?.title || "";
+    return title.toLowerCase().includes(keyword);
+  }) || [];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-      {products.map((product) => (
-        <Link key={product.id} href={`/product-details/${product.id}`}>
-          <div className="bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105">
-            <div className="relative h-[170px]">
-              {/* Hiển thị hình ảnh từ trường 'banner' */}
-              {product.attributes.banner?.data?.attributes?.url && (
+      {filteredProducts.length > 0 ? (
+        filteredProducts.map((product) => (
+          <Link key={product.id} href={`/product-details/${product.id}`}>
+            <div className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:scale-105 transition">
+              <div className="relative h-[170px]">
                 <Image
-                  src={product.attributes.banner.data.attributes.url}
-                  alt={product.attributes.title}
+                  src={
+                    product?.attributes?.banner?.data?.attributes?.url ||
+                    "/placeholder.png"
+                  }
+                  alt={product?.attributes?.title || "Product"}
                   fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  style={{
-                    objectFit: "cover",
-                  }}
+                  className="object-cover"
                 />
-              )}
-            </div>
+              </div>
 
-            <div className="p-3 text-center text-white">
-              <div>
-                {/* Hiển thị tiêu đề sản phẩm */}
+              <div className="p-3 text-center text-white">
                 <h2 className="text-[14px] font-medium line-clamp-1">
-                  {product.attributes.title}
+                  {product?.attributes?.title || "Untitled Product"}
                 </h2>
+
                 <div className="flex items-center justify-between mt-2">
-                  {/* Hiển thị danh mục */}
-                  <h2 className="text-[12px] text-gray-400 flex gap-1 items-center">
+                  <p className="text-[12px] text-gray-400 flex gap-1 items-center">
                     <List className="w-4 h-4" />
-                    {product.attributes.category?.data?.attributes?.name || 'N/A'}
-                  </h2>
-                  {/* Hiển thị giá sản phẩm */}
-                  <h2>${product.attributes.price}</h2>
+                    {product?.attributes?.category?.data?.attributes?.name || "N/A"}
+                  </p>
+                  <p>${product?.attributes?.price || 0}</p>
                 </div>
               </div>
             </div>
-          </div>
-        </Link>
-      ))}
+          </Link>
+        ))
+      ) : (
+        <p className="text-gray-400">No matching products found</p>
+      )}
     </div>
   );
+};
+
+ProductsList.propTypes = {
+  products: PropTypes.array.isRequired,
+  searchTerm: PropTypes.string.isRequired,
 };
 
 export default ProductsList;

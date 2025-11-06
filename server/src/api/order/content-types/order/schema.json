@@ -4,17 +4,22 @@
   "info": {
     "singularName": "order",
     "pluralName": "orders",
-    "displayName": "Order"
+    "displayName": "Order",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
   },
   "pluginOptions": {},
   "attributes": {
+    "clerkUserId": {
+      "type": "string",
+      "required": false
+    },
     "email": {
       "type": "email"
     },
-    "Username": {
+    "username": {
       "type": "string"
     },
     "amount": {
