@@ -1,0 +1,10 @@
+LOAD DATABASE
+     FROM sqlite:///workspace/server/.tmp/data.db
+     INTO postgresql://strapi:strapi@jewelry-postgres:5432/strapi
+
+WITH include drop, truncate, create tables, create indexes, reset sequences
+
+CAST 
+    type datetime to text,
+    type timestamp to text,
+    type json to jsonb;
