@@ -1,4 +1,5 @@
 "use client";
+// CI/CD Test - This comment triggers the workflow
 import { UserButton, useUser, useClerk } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState, useRef } from "react";
