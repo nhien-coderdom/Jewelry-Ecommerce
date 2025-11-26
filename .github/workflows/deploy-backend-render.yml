@@ -42,14 +42,14 @@ jobs:
       working-directory: ./server
       run: npm test --if-present
 
-  # Deploy job disabled until GitHub Secrets are configured
-  # To enable: Add RENDER_DEPLOY_HOOK_URL to GitHub Secrets
-  # deploy-render:
-  #   needs: test-backend
-  #   runs-on: ubuntu-latest
-  #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-  #   
-  #   steps:
-  #   - name: Trigger Render Deploy
-  #     run: |
-  #       curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+  # Deploy to Render (only on main branch push)
+  deploy-render:
+    name: Deploy to Render
+    needs: test-backend
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Trigger Render Deploy
+      run: |
+        curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
