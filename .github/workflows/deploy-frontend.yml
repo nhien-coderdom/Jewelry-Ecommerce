@@ -3,14 +3,13 @@ name: Deploy Frontend to Vercel
 on:
   push:
     branches:
-      - main
-      - feature/phase2
+      - '**'  # Run on ALL branches
     paths:
       - 'client/**'
       - '.github/workflows/deploy-frontend.yml'
   pull_request:
     branches:
-      - main
+      - '**'  # Run on ALL branches
     paths:
       - 'client/**'
 
