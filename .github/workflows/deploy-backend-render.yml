@@ -2,11 +2,16 @@ name: Deploy Backend to Render
 
 on:
   push:
-    branches: [ main, feature/phase2 ]
-    paths: [ 'server/**' ]
+    branches:
+      - '**'  # Run on ALL branches
+    paths:
+      - 'server/**'
+      - '.github/workflows/deploy-backend-render.yml'
   pull_request:
-    branches: [ main ]
-    paths: [ 'server/**' ]
+    branches:
+      - '**'  # Run on ALL branches
+    paths:
+      - 'server/**'
 
 jobs:
   test-backend:
@@ -37,14 +42,14 @@ jobs:
       working-directory: ./server
       run: npm test --if-present
 
-  # Deploy job disabled until GitHub Secrets are configured
-  # To enable: Add RENDER_DEPLOY_HOOK_URL to GitHub Secrets
-  # deploy-render:
-  #   needs: test-backend
-  #   runs-on: ubuntu-latest
-  #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-  #   
-  #   steps:
-  #   - name: Trigger Render Deploy
-  #     run: |
-  #       curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+  # Deploy to Render (only on main branch push)
+  deploy-render:
+    name: Deploy to Render
+    needs: test-backend
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Trigger Render Deploy
+      run: |
+        curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
