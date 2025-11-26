@@ -1,15 +1,38 @@
 "use client";
-import { UserButton, useUser } from "@clerk/nextjs";
+import { UserButton, useUser, useClerk } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState, useRef } from "react";
 import { useGetCartItemsQuery } from "../_state/_services/CartApi";
 import Cart from "../_components/Cart";
+import UserProfilePopup from "../_components/UserProfilePopup";
+
 
 const Header = () => {
   const [cartOpen, setCartOpen] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const { user } = useUser();
+  const { signOut } = useClerk();
   const email = user?.primaryEmailAddress?.emailAddress;
   const cartRef = useRef(null);
+  const accountRef = useRef(null);
+  const [openProfile, setOpenProfile] = useState(false);
+  const [strapiUser, setStrapiUser] = useState(null);
+  useEffect(() => {
+  const fetchUser = async () => {
+    if (!email) return;
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_REST_API_URL}/users?filters[email][$eq]=${email}`);
+    const data = await res.json();
+
+    if (data?.length > 0) {
+      setStrapiUser(data[0]);
+    }
+  };
+
+  fetchUser();
+}, [email]);
+
+
 
   // ⚙️ Thêm skip để tránh gọi API khi user chưa load
   const { data, isSuccess, isFetching } = useGetCartItemsQuery(email, {
@@ -30,16 +53,19 @@ const Header = () => {
       if (cartRef.current && !cartRef.current.contains(event.target)) {
         setCartOpen(false);
       }
+      if (accountRef.current && !accountRef.current.contains(event.target)) {
+        setAccountMenuOpen(false);
+      }
     };
 
-    if (cartOpen) {
+    if (cartOpen || accountMenuOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [cartOpen]);
+  }, [cartOpen, accountMenuOpen]);
 
   // 🧮 Lấy số lượng sản phẩm trong giỏ (nếu có)
   const cartCount =
@@ -142,7 +168,105 @@ const Header = () => {
                   </div>
 
                   {/* User profile */}
-                  <UserButton />
+                  <div className="relative" ref={accountRef}>
+                    <button
+                      className="flex items-center gap-2 cursor-pointer"
+                      onClick={() => setAccountMenuOpen(!accountMenuOpen)}
+                    >
+                      {user?.imageUrl ? (
+                        <img 
+                          src={user.imageUrl} 
+                          alt="avatar" 
+                          className="w-8 h-8 rounded-full border-2 border-teal-500"
+                        />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center text-white font-semibold">
+                          {user?.firstName?.[0] || user?.username?.[0] || "U"}
+                        </div>
+                      )}
+                    </button>
+
+                    {/* Account Dropdown Menu */}
+                    {accountMenuOpen && (
+                      <div className="absolute top-12 right-0 w-56 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
+                        {/* User Info */}
+                        <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
+                          <p className="text-sm font-semibold text-gray-800 truncate">
+                            {user?.fullName || user?.username || "User"}
+                          </p>
+                          <p className="text-xs text-gray-500 truncate">{email}</p>
+                        </div>
+
+                        {/* Menu Items */}
+                        <div className="py-2">
+                          <button
+                            onClick={() => {
+                              setAccountMenuOpen(false);
+                              setOpenProfile(true);
+                            }}
+                            className="w-full px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                            </svg>
+                            Manage Account
+                          </button>
+                          
+                          <button
+                            onClick={() => {
+                              setAccountMenuOpen(false);
+                              signOut({ redirectUrl: "/" });
+                            }}
+                            className="w-full px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-3 transition"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
+                            </svg>
+                            Sign Out
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                {openProfile && (
+                  <UserProfilePopup
+                    userData={strapiUser}
+                    onClose={() => setOpenProfile(false)}
+                    onSave={async (updatedData) => {
+                      try {
+                        // Gọi API để lưu vào database
+                        const apiUrl = process.env.NEXT_PUBLIC_REST_API_URL || "http://localhost:1337/api";
+                        const res = await fetch(`${apiUrl}/sync-clerk`, {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            clerkUserID: user.id,
+                            email: user.primaryEmailAddress?.emailAddress,
+                            username: updatedData.username,
+                            phone: updatedData.phone,
+                            address: updatedData.address,
+                          }),
+                        });
+                        const result = await res.json();
+                        console.log("API Response:", result); // Debug log
+                        
+                        // Kiểm tra cả success và message
+                        if (result.success || result.message?.includes("successfully")) {
+                          setStrapiUser({ ...strapiUser, ...updatedData });
+                          alert("✅ Cập nhật thành công!");
+                        } else {
+                          alert("❌ Lỗi: " + (result.error || result.message || "Không thể cập nhật"));
+                        }
+                      } catch (err) {
+                        console.error("❌ Error saving:", err);
+                        alert("❌ Lỗi kết nối server!");
+                      }
+                      setOpenProfile(false);
+                    }}
+                  />
+                )}
+
                 </div>
               )}
             </div>

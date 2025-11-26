@@ -771,6 +771,12 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'plugin::users-permissions.role'
     >;
     clerckUserID: Attribute.String;
+    phone: Attribute.String &
+      Attribute.SetMinMaxLength<{
+        minLength: 10;
+        maxLength: 10;
+      }>;
+    address: Attribute.Text;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -904,6 +910,7 @@ export interface ApiOrderOrder extends Schema.CollectionType {
     singularName: 'order';
     pluralName: 'orders';
     displayName: 'Order';
+    description: '';
   };
   options: {
     draftAndPublish: true;
