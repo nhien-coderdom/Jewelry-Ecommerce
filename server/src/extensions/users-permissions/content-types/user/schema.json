@@ -67,6 +67,15 @@
     },
     "clerckUserID": {
       "type": "string"
+    },
+    "phone": {
+      "type": "string",
+      "maxLength": 10,
+      "minLength": 10,
+      "regex": "(^[0-9]+$)"
+    },
+    "address": {
+      "type": "text"
     }
   }
 }
