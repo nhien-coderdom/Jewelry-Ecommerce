@@ -1,5 +1,5 @@
 "use client";
-// CI/CD Test - This comment triggers the workflow
+// CI/CD Test - Verifying deployment with secrets configured
 import { UserButton, useUser, useClerk } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState, useRef } from "react";
