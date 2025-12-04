@@ -1,5 +1,7 @@
 "use client";
-// CI/CD Test - Verifying deployment with secrets configured
+// CI//
+// CD Test - Verifying deployment with secrets configured
+// test cicd
 import { UserButton, useUser, useClerk } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState, useRef } from "react";
