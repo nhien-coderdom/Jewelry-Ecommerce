@@ -68,11 +68,22 @@ module.exports = createCoreController('api::order.order', ({ strapi }) => ({
     const { clerkUserId } = ctx.query;
     if (!clerkUserId) return ctx.badRequest('clerkUserId is required');
 
-    return await strapi.db.query('api::order.order').findMany({
-      where: { clerkUserId },
-      populate: ['products', 'order_items', 'order_items.product'],
-      orderBy: { createdAt: 'desc' },
+    const orders = await strapi.entityService.findMany('api::order.order', {
+      filters: { clerkUserId },
+      populate: {
+        products: true,
+        order_items: {
+          populate: {
+            product: {
+              populate: ['image', 'banner']
+            }
+          }
+        }
+      },
+      sort: { createdAt: 'desc' },
     });
+
+    return orders;
   },
 
   async findOne(ctx) {
@@ -81,12 +92,22 @@ module.exports = createCoreController('api::order.order', ({ strapi }) => ({
 
     if (!clerkUserId) return ctx.badRequest('clerkUserId is required');
 
-    const order = await strapi.db.query('api::order.order').findOne({
-      where: { id, clerkUserId },
-      populate: ['products', 'order_items', 'order_items.product'],
+    const order = await strapi.entityService.findOne('api::order.order', id, {
+      populate: {
+        products: true,
+        order_items: {
+          populate: {
+            product: {
+              populate: ['image', 'banner']
+            }
+          }
+        }
+      },
     });
 
-    if (!order) return ctx.notFound('Order not found');
+    if (!order || order.clerkUserId !== clerkUserId) {
+      return ctx.notFound('Order not found');
+    }
 
     return order;
   }

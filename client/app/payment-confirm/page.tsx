@@ -29,7 +29,7 @@ export default function PaymentConfirm() {
           Continue Shopping
         </Link>
         <Link
-          href="/orders"
+          href="/my-orders"
           className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg shadow-md transition"
         >
           View My Orders

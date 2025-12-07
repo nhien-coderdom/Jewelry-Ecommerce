@@ -12,6 +12,7 @@ export const orderApi = createApi({
     //   Authorization: `Bearer ${apiKey}`,
     // },
   }),
+  tagTypes: ["Orders"],
   endpoints: (builder) => ({
     createOrder: builder.mutation({
       query: (data) => ({
@@ -21,7 +22,11 @@ export const orderApi = createApi({
       }),
       invalidatesTags: ["Orders"],
     }),
+    getUserOrders: builder.query({
+      query: (clerkUserId) => `orders?clerkUserId=${clerkUserId}`,
+      providesTags: ["Orders"],
+    }),
   }),
 });
 
-export const { useCreateOrderMutation } = orderApi;
+export const { useCreateOrderMutation, useGetUserOrdersQuery } = orderApi;
