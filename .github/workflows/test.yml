@@ -1,0 +1,56 @@
+name: Run Unit Tests
+
+# Tự động chạy khi push hoặc PR vào main branch
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+    # ✅ Checkout code
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v3
+
+    # ✅ Setup Node.js
+    - name: 🟢 Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: server/package-lock.json
+
+    # ✅ Install dependencies
+    - name: 📦 Install dependencies
+      run: |
+        cd server
+        npm ci
+
+    # ✅ Run tests
+    - name: 🧪 Run unit tests
+      run: |
+        cd server
+        npm test
+
+    # ✅ Generate coverage report
+    - name: 📊 Generate coverage report
+      run: |
+        cd server
+        npm run test:coverage
+
+    # ✅ Upload coverage to Codecov (optional)
+    - name: 📤 Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./server/coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
