@@ -141,7 +141,7 @@ const MyOrdersPage = () => {
                     <div>
                       <p className="text-sm text-gray-400">Total Amount</p>
                       <p className="text-lg font-bold text-teal-400">
-                        {formatCurrency(order.totalOrderAmount || 0)}
+                        {formatCurrency(order.amount || 0)}
                       </p>
                     </div>
                     <div>
@@ -163,7 +163,7 @@ const MyOrdersPage = () => {
                   </h3>
                   <div className="space-y-4">
                     {order.order_items?.map((item) => {
-                      const product = item.product;
+                      const { product } = item;
                       const imageUrl = product?.image?.url || product?.banner?.url;
                       const fullImageUrl = imageUrl 
                         ? (imageUrl.startsWith('http') 
