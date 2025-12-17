@@ -1,5 +1,5 @@
 /**
- * 🧪 Unit Tests cho Product - CRUD Operations
+ * Unit Tests cho Product - CRUD Operations
  * Test các chức năng Thêm/Xóa/Sửa với MOCK DATA
  */
 
@@ -11,19 +11,19 @@ const {
 describe('Product - CRUD Unit Tests', () => {
   let mockStrapi;
 
-  // 🎬 Setup: Tạo mock Strapi trước mỗi test
+  // Setup: Tạo mock Strapi trước mỗi test
   beforeEach(() => {
     mockStrapi = createMockStrapi();
   });
 
-  // 🧹 Cleanup: Xóa mock data sau mỗi test
+  // Cleanup: Xóa mock data sau mỗi test
   afterEach(() => {
     mockStrapi.clearMockData();
     jest.clearAllMocks();
   });
 
-  describe('➕ CREATE - Thêm Product', () => {
-    it('✅ Nên thêm product thành công', async () => {
+  describe('CREATE - Thêm Product', () => {
+    it('PASS: Nên thêm product thành công', async () => {
       const productData = {
         title: 'Diamond Ring',
         description: 'Beautiful diamond ring',
@@ -44,7 +44,7 @@ describe('Product - CRUD Unit Tests', () => {
       expect(mockStrapi.entityService.create).toHaveBeenCalledTimes(1);
     });
 
-    it('✅ Nên thêm nhiều products liên tiếp', async () => {
+    it('PASS: Nên thêm nhiều products liên tiếp', async () => {
       await mockStrapi.entityService.create('api::product.product', {
         data: createMockProduct({ title: 'Product 1' })
       });
@@ -57,7 +57,7 @@ describe('Product - CRUD Unit Tests', () => {
       expect(mockData.products).toHaveLength(2);
     });
 
-    it('❌ Validation: Giá không được âm', () => {
+    it('ERROR_HANDLING: Validation - Giá không được âm', () => {
       const invalidProduct = {
         title: 'Invalid Product',
         price: -100,
@@ -69,7 +69,7 @@ describe('Product - CRUD Unit Tests', () => {
       expect(isValid).toBe(false);
     });
 
-    it('❌ Validation: Stock không được âm', () => {
+    it('ERROR_HANDLING: Validation - Stock không được âm', () => {
       const invalidProduct = {
         title: 'Invalid Stock',
         price: 100,
@@ -81,8 +81,8 @@ describe('Product - CRUD Unit Tests', () => {
     });
   });
 
-  describe('✏️ UPDATE - Sửa Product', () => {
-    it('✅ Nên update price thành công', async () => {
+  describe('UPDATE - Sửa Product', () => {
+    it('PASS: Nên update price thành công', async () => {
       // Tạo product
       const product = await mockStrapi.entityService.create(
         'api::product.product',
@@ -106,7 +106,7 @@ describe('Product - CRUD Unit Tests', () => {
       expect(mockStrapi.entityService.update).toHaveBeenCalledTimes(1);
     });
 
-    it('✅ Nên update stock sau khi có order', async () => {
+    it('PASS: Nên update stock sau khi có order', async () => {
       const product = await mockStrapi.entityService.create(
         'api::product.product',
         {
@@ -125,7 +125,7 @@ describe('Product - CRUD Unit Tests', () => {
       expect(updated.stock).toBe(7);
     });
 
-    it('✅ Nên update nhiều fields cùng lúc', async () => {
+    it('PASS: Nên update nhiều fields cùng lúc', async () => {
       const product = await mockStrapi.entityService.create(
         'api::product.product',
         {
@@ -151,8 +151,8 @@ describe('Product - CRUD Unit Tests', () => {
     });
   });
 
-  describe('🗑️ DELETE - Xóa Product', () => {
-    it('✅ Nên xóa product thành công', async () => {
+  describe('DELETE - Xóa Product', () => {
+    it('PASS: Nên xóa product thành công', async () => {
       const product = await mockStrapi.entityService.create(
         'api::product.product',
         {
@@ -174,7 +174,7 @@ describe('Product - CRUD Unit Tests', () => {
       expect(mockStrapi.entityService.delete).toHaveBeenCalledTimes(1);
     });
 
-    it('✅ Nên xóa được nhiều products', async () => {
+    it('PASS: Nên xóa được nhiều products', async () => {
       const product1 = await mockStrapi.entityService.create(
         'api::product.product',
         { data: createMockProduct({ title: 'Delete 1' }) }
@@ -193,8 +193,8 @@ describe('Product - CRUD Unit Tests', () => {
     });
   });
 
-  describe('🔍 READ - Đọc/Tìm Product', () => {
-    it('✅ Nên tìm được product theo ID', async () => {
+  describe('READ - Đọc/Tìm Product', () => {
+    it('PASS: Nên tìm được product theo ID', async () => {
       const product = await mockStrapi.entityService.create(
         'api::product.product',
         {
@@ -212,7 +212,7 @@ describe('Product - CRUD Unit Tests', () => {
       expect(found.title).toBe('Find Me');
     });
 
-    it('✅ Nên tìm được tất cả products', async () => {
+    it('PASS: Nên tìm được tất cả products', async () => {
       await mockStrapi.entityService.create('api::product.product', {
         data: createMockProduct({ title: 'Product 1' })
       });
@@ -228,7 +228,7 @@ describe('Product - CRUD Unit Tests', () => {
       expect(products.length).toBeGreaterThanOrEqual(2);
     });
 
-    it('❌ Nên trả về null khi product không tồn tại', async () => {
+    it('ERROR_HANDLING: Nên trả về null khi product không tồn tại', async () => {
       const notFound = await mockStrapi.entityService.findOne(
         'api::product.product',
         99999

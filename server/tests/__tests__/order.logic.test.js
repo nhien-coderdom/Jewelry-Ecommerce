@@ -1,5 +1,5 @@
 /**
- * 🧪 Unit Tests cho Order Logic
+ * Unit Tests cho Order Logic
  * Test logic tạo/tìm order với MOCK DATA
  */
 
@@ -13,19 +13,19 @@ const {
 describe('Order Logic - Unit Tests', () => {
   let mockStrapi;
 
-  // 🎬 Setup: Tạo mock data trước mỗi test
+  // Setup: Tạo mock data trước mỗi test
   beforeEach(() => {
     mockStrapi = createMockStrapi();
   });
 
-  // 🧹 Cleanup: Xóa mock data sau mỗi test
+  // Cleanup: Xóa mock data sau mỗi test
   afterEach(() => {
     mockStrapi.clearMockData();
     jest.clearAllMocks();
   });
 
-  describe('🎯 CREATE Order Logic', () => {
-    it('✅ Nên tạo order thành công với mock data hợp lệ', async () => {
+  describe('CREATE Order Logic', () => {
+    it('PASS: Nên tạo order thành công với mock data hợp lệ', async () => {
       const orderData = {
         clerkUserId: 'test_user_123',
         products: [1],
@@ -47,7 +47,7 @@ describe('Order Logic - Unit Tests', () => {
       );
     });
 
-    it('❌ Validation: clerkUserId là required', () => {
+    it('ERROR_HANDLING: Validation - clerkUserId là required', () => {
       const orderData = {
         products: [1],
         total: 100
@@ -57,7 +57,7 @@ describe('Order Logic - Unit Tests', () => {
       expect(isValid).toBe(false);
     });
 
-    it('❌ Validation: products là required', () => {
+    it('ERROR_HANDLING: Validation - products là required', () => {
       const orderData = {
         clerkUserId: 'user_123',
         total: 100
@@ -67,7 +67,7 @@ describe('Order Logic - Unit Tests', () => {
       expect(isValid).toBe(false);
     });
 
-    it('❌ Validation: order_items là required', () => {
+    it('ERROR_HANDLING: Validation - order_items là required', () => {
       const orderData = {
         clerkUserId: 'user_123',
         products: [1],
@@ -78,7 +78,7 @@ describe('Order Logic - Unit Tests', () => {
       expect(isValid).toBe(false);
     });
 
-    it('✅ Logic: Kiểm tra stock trước khi order', () => {
+    it('PASS: Kiểm tra stock trước khi order', () => {
       const productStock = 5;
       const requestedQuantity = 3;
 
@@ -86,7 +86,7 @@ describe('Order Logic - Unit Tests', () => {
       expect(hasEnoughStock).toBe(true);
     });
 
-    it('❌ Logic: Phát hiện stock không đủ', () => {
+    it('ERROR_HANDLING: Phát hiện stock không đủ', () => {
       const productStock = 1;
       const requestedQuantity = 10;
 
@@ -94,7 +94,7 @@ describe('Order Logic - Unit Tests', () => {
       expect(hasEnoughStock).toBe(false);
     });
 
-    it('✅ Logic: Tính stock mới sau khi order', () => {
+    it('PASS: Tính stock mới sau khi order', () => {
       const currentStock = 10;
       const orderedQuantity = 3;
 
@@ -102,7 +102,7 @@ describe('Order Logic - Unit Tests', () => {
       expect(newStock).toBe(7);
     });
 
-    it('✅ Nên tạo order items thành công', async () => {
+    it('PASS: Nên tạo order items thành công', async () => {
       const order = await mockStrapi.entityService.create('api::order.order', {
         data: {
           clerkUserId: 'user_789',
@@ -128,8 +128,8 @@ describe('Order Logic - Unit Tests', () => {
     });
   });
 
-  describe('🔍 FIND Orders Logic', () => {
-    it('✅ Nên tìm được orders với mock data', async () => {
+  describe('FIND Orders Logic', () => {
+    it('PASS: Nên tìm được orders với mock data', async () => {
       // Tạo mock orders
       await mockStrapi.entityService.create('api::order.order', {
         data: createMockOrder({ clerkUserId: 'user_search', total: 100 })
@@ -144,14 +144,14 @@ describe('Order Logic - Unit Tests', () => {
       expect(orders.length).toBeGreaterThanOrEqual(2);
     });
 
-    it('❌ Validation: clerkUserId required khi tìm', () => {
+    it('ERROR_HANDLING: Validation - clerkUserId required khi tìm', () => {
       const query = {};
 
       const isValid = !!query.clerkUserId;
       expect(isValid).toBe(false);
     });
 
-    it('✅ Nên lọc orders theo clerkUserId', () => {
+    it('PASS: Nên lọc orders theo clerkUserId', () => {
       const allOrders = [
         { id: 1, clerkUserId: 'user_a', total: 100 },
         { id: 2, clerkUserId: 'user_b', total: 200 },
@@ -166,8 +166,8 @@ describe('Order Logic - Unit Tests', () => {
     });
   });
 
-  describe('🔎 FIND ONE Order Logic', () => {
-    it('✅ Nên tìm được 1 order theo ID', async () => {
+  describe('FIND ONE Order Logic', () => {
+    it('PASS: Nên tìm được 1 order theo ID', async () => {
       const order = await mockStrapi.entityService.create('api::order.order', {
         data: createMockOrder({ 
           clerkUserId: 'user_findone', 
@@ -184,7 +184,7 @@ describe('Order Logic - Unit Tests', () => {
       expect(found.id).toBe(order.id);
     });
 
-    it('❌ Nên trả về null khi order không tồn tại', async () => {
+    it('ERROR_HANDLING: Nên trả về null khi order không tồn tại', async () => {
       const notFound = await mockStrapi.entityService.findOne(
         'api::order.order',
         99999
@@ -193,7 +193,7 @@ describe('Order Logic - Unit Tests', () => {
       expect(notFound).toBeNull();
     });
 
-    it('✅ Logic: Validate ownership (order thuộc về user)', () => {
+    it('PASS: Validate ownership - order thuộc về user', () => {
       const order = { id: 1, clerkUserId: 'user_a' };
       const requestUserId = 'user_a';
 
@@ -201,7 +201,7 @@ describe('Order Logic - Unit Tests', () => {
       expect(isOwner).toBe(true);
     });
 
-    it('❌ Logic: Phát hiện order không thuộc về user', () => {
+    it('ERROR_HANDLING: Phát hiện order không thuộc về user', () => {
       const order = { id: 1, clerkUserId: 'user_a' };
       const requestUserId = 'user_b';
 

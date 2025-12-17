@@ -1,5 +1,5 @@
 /**
- * 🧪 Unit Tests cho Cart - CRUD Operations
+ * Unit Tests cho Cart - CRUD Operations
  * Test các chức năng Thêm/Xóa/Sửa cart items với MOCK DATA
  */
 
@@ -21,8 +21,8 @@ describe('Cart - CRUD Unit Tests', () => {
     jest.clearAllMocks();
   });
 
-  describe('➕ ADD to Cart', () => {
-    it('✅ Nên thêm product vào cart thành công', async () => {
+  describe('ADD to Cart', () => {
+    it('PASS: Nên thêm product vào cart thành công', async () => {
       const cart = await mockStrapi.entityService.create('api::cart.cart', {
         data: createMockCart()
       });
@@ -43,7 +43,7 @@ describe('Cart - CRUD Unit Tests', () => {
       expect(cartItem.product).toBe(1);
     });
 
-    it('❌ Validation: Không cho thêm quá stock', () => {
+    it('ERROR_HANDLING: Validation - Không cho thêm quá stock', () => {
       const productStock = 5;
       const requestedQuantity = 10;
 
@@ -52,8 +52,8 @@ describe('Cart - CRUD Unit Tests', () => {
     });
   });
 
-  describe('✏️ UPDATE Cart Item', () => {
-    it('✅ Nên update quantity thành công', async () => {
+  describe('UPDATE Cart Item', () => {
+    it('PASS: Nên update quantity thành công', async () => {
       const cart = await mockStrapi.entityService.create('api::cart.cart', {
         data: createMockCart()
       });
@@ -89,8 +89,8 @@ describe('Cart - CRUD Unit Tests', () => {
     });
   });
 
-  describe('🗑️ DELETE from Cart', () => {
-    it('✅ Nên xóa cart item thành công', async () => {
+  describe('DELETE from Cart', () => {
+    it('PASS: Nên xóa cart item thành công', async () => {
       const cart = await mockStrapi.entityService.create('api::cart.cart', {
         data: createMockCart()
       });
