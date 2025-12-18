@@ -87,7 +87,7 @@ const Cart = ({ data = [], onClose }) => {
                     {product?.title}
                   </h3>
                   <p className="text-xs text-gray-400">
-                    ${product?.price?.toLocaleString()}
+                    {product?.price?.toLocaleString()} $
                   </p>
                 </div>
 
@@ -139,7 +139,7 @@ const Cart = ({ data = [], onClose }) => {
         <div className="border-t border-gray-700 pt-3">
           <div className="flex justify-between text-sm text-gray-300">
             <span>Total:</span>
-            <span className="font-semibold">${total.toLocaleString()}</span>
+            <span className="font-semibold">{total.toLocaleString()} $</span>
           </div>
         </div>
 

@@ -150,7 +150,7 @@ const Page = () => {
                               <dd className="capitalize">
                                 {product?.category || "Other"}
                               </dd>
-                              <dd>${product?.price || 0}</dd>
+                              <dd>{product?.price || 0} $</dd>
                             </dl>
                           </div>
 

@@ -131,7 +131,7 @@ export default function CheckoutForm({ amount, clientSecret }) {
                 <p className="text-sm text-gray-600">SL: {item.quantity}</p>
               </div>
               <span className="font-bold">
-                ${(item.price * item.quantity).toLocaleString()}
+                {(item.price * item.quantity).toLocaleString()} $
               </span>
             </div>
           ))
@@ -139,7 +139,7 @@ export default function CheckoutForm({ amount, clientSecret }) {
 
         <div className="border-t pt-3 mt-3 flex justify-between font-bold text-lg">
           <span>Tổng cộng</span>
-          <span>${Number(amount).toLocaleString()}</span>
+          <span>{Number(amount).toLocaleString()} $</span>
         </div>
       </div>
 
@@ -154,7 +154,7 @@ export default function CheckoutForm({ amount, clientSecret }) {
             disabled={!stripe || !elements || loading}
             className="mt-4 w-full bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-lg font-semibold disabled:bg-gray-400"
           >
-            {loading ? "Đang xử lý..." : `Thanh toán $${Number(amount).toLocaleString()}`}
+            {loading ? "Đang xử lý..." : `Thanh toán ${Number(amount).toLocaleString()} $`}
           </button>
         </form>
       </div>

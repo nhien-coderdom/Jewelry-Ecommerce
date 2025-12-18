@@ -165,7 +165,7 @@ const Details = ({ product }) => {
         Eligible For Instant Delivery
       </h2>
 
-      <h2 className="text-[24px] text-primary mb-4">$ {price}</h2>
+      <h2 className="text-[24px] text-primary mb-4">{price?.toLocaleString()} $</h2>
 
       <button
         onClick={handleAddToCart}
