@@ -154,7 +154,7 @@ export default function CheckoutForm({ amount, clientSecret }) {
             disabled={!stripe || !elements || loading}
             className="mt-4 w-full bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-lg font-semibold disabled:bg-gray-400"
           >
-            {loading ? "Processing..." : `Pay ${Number(amount).toLocaleString('en-US').replace(/,/g, '.')} $`}
+            {loading ? "Processing..." : `Pay $${Number(amount).toLocaleString('en-US').replace(/,/g, '.')}`}
           </button>
         </form>
       </div>
