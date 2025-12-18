@@ -212,6 +212,28 @@ describe('Product - CRUD Unit Tests', () => {
       expect(found.title).toBe('Find Me');
     });
 
+    it('PASS: Nên tìm product theo ID với đầy đủ thông tin', async () => {
+      const product = await mockStrapi.entityService.create(
+        'api::product.product',
+        {
+          data: createMockProduct({ 
+            title: 'Sapphire Ring',
+            price: 2500,
+            stock: 10 
+          })
+        }
+      );
+
+      const found = await mockStrapi.entityService.findOne(
+        'api::product.product',
+        product.id
+      );
+
+      expect(found).toBeDefined();
+      expect(found.title).toBe('Sapphire Ring');
+      expect(found.price).toBe(2500);
+    });
+
     it('PASS: Nên tìm được tất cả products', async () => {
       await mockStrapi.entityService.create('api::product.product', {
         data: createMockProduct({ title: 'Product 1' })
@@ -235,6 +257,17 @@ describe('Product - CRUD Unit Tests', () => {
       );
 
       expect(notFound).toBeNull();
+    });
+
+    it('PASS: Nên filter products theo điều kiện', async () => {
+      const products = [
+        { id: 1, title: 'Ring 1', price: 1000, stock: 10 },
+        { id: 2, title: 'Ring 2', price: 2000, stock: 5 },
+        { id: 3, title: 'Necklace', price: 3000, stock: 0 },
+      ];
+
+      const availableProducts = products.filter(p => p.stock > 0);
+      expect(availableProducts).toHaveLength(2);
     });
   });
 });

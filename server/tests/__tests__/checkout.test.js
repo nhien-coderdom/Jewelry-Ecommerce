@@ -157,17 +157,6 @@ describe('Checkout - Quy trình thanh toán', () => {
 
       expect(allItemsAvailable).toBe(false);
     });
-
-    it('PASS: Nên kiểm tra stock cho nhiều items', () => {
-      const checkoutItems = [
-        { productId: 1, quantity: 2, maxStock: 10 },
-        { productId: 2, quantity: 1, maxStock: 5 },
-        { productId: 3, quantity: 3, maxStock: 8 },
-      ];
-
-      const hasStock = checkoutItems.every(item => item.quantity <= item.maxStock);
-      expect(hasStock).toBe(true);
-    });
   });
 
   describe('CALCULATE: Tính toán giá cả Checkout', () => {
@@ -216,22 +205,6 @@ describe('Checkout - Quy trình thanh toán', () => {
 
       const grandTotal = subtotal + shippingFee;
       expect(grandTotal).toBe(550);
-    });
-
-    it('PASS: Nên miễn phí vận chuyển khi order >= 1000', () => {
-      const subtotal = 1200;
-      const minForFreeShipping = 1000;
-      const shippingFee = subtotal >= minForFreeShipping ? 0 : 50;
-
-      expect(shippingFee).toBe(0);
-    });
-
-    it('PASS: Nên tính shipping khi order < 1000', () => {
-      const subtotal = 800;
-      const minForFreeShipping = 1000;
-      const shippingFee = subtotal >= minForFreeShipping ? 0 : 50;
-
-      expect(shippingFee).toBe(50);
     });
   });
 

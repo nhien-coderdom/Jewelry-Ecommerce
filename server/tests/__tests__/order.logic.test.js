@@ -102,6 +102,29 @@ describe('Order Logic - Unit Tests', () => {
       expect(newStock).toBe(7);
     });
 
+    it('PASS: Nên update product stock sau order thành công', () => {
+      const products = [
+        { id: 1, stock: 50 },
+        { id: 2, stock: 30 }
+      ];
+
+      const orderItems = [
+        { productId: 1, quantity: 5 },
+        { productId: 2, quantity: 3 }
+      ];
+
+      const updatedProducts = products.map(product => {
+        const orderItem = orderItems.find(item => item.productId === product.id);
+        if (orderItem) {
+          return { ...product, stock: product.stock - orderItem.quantity };
+        }
+        return product;
+      });
+
+      expect(updatedProducts[0].stock).toBe(45);
+      expect(updatedProducts[1].stock).toBe(27);
+    });
+
     it('PASS: Nên tạo order items thành công', async () => {
       const order = await mockStrapi.entityService.create('api::order.order', {
         data: {
