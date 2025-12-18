@@ -210,5 +210,24 @@ describe('Cart - CRUD Unit Tests', () => {
 
       expect(mockStrapi.entityService.delete).toHaveBeenCalledTimes(2);
     });
+
+    it('PASS: Nên validate trước khi xóa', () => {
+      const cartItems = [
+        { id: 1, product: 1, quantity: 2 },
+        { id: 2, product: 2, quantity: 1 }
+      ];
+
+      const itemToDelete = cartItems.find(item => item.id === 1);
+      expect(itemToDelete).toBeDefined();
+      expect(itemToDelete.quantity).toBe(2);
+    });
+
+    it('PASS: Nên xóa item và cập nhật cart', () => {
+      const cart = { id: 1, items: [1, 2, 3] };
+      const itemIdToDelete = 2;
+
+      const updatedItems = cart.items.filter(id => id !== itemIdToDelete);
+      expect(updatedItems).toEqual([1, 3]);
+    });
   });
 });

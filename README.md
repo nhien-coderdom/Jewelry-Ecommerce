@@ -229,8 +229,8 @@ Comprehensive test coverage for jewelry e-commerce platform with 102 unit tests.
 |---|---|---|---|
 | **businessLogic.test.js** | 33 | ✅ PASS | Price calc, VAT, stock, validation |
 | **order.logic.test.js** | 16 | ✅ PASS | Order CRUD with authorization |
-| **cart.crud.test.js** | 10 | ✅ PASS | Cart operations with stock validation |
-| **product.crud.test.js** | 14 | ✅ PASS | Product CRUD operations |
+| **cart.crud.test.js** | 12 | ✅ PASS | Cart operations with stock validation |
+| **product.crud.test.js** | 12 | ✅ PASS | Product CRUD operations |
 | **checkout.test.js** | 29 | ✅ PASS | Complete checkout flow |
 | **TOTAL** | **102** | **✅ 100%** | **Full integration flow** |
 
