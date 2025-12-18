@@ -245,18 +245,30 @@ export const cartApi = createApi({
           }
 
           console.log('✅ Cart item updated successfully');
-      // 🔄 Return dữ liệu đúng format để RTK Query cache
-      return { 
-        data: {
-          data: {
-            id,
-            attributes: {
-              quantity,
-              ...(updateRes.data?.data?.attributes || {})
+          // 🔄 Return dữ liệu đúng format để RTK Query cache
+          return { 
+            data: {
+              data: {
+                id,
+                attributes: {
+                  quantity,
+                  ...(updateRes.data?.data?.attributes || {})
+                }
+              }
             }
-          }
+          };
+        } catch (err) {
+          console.error('❌ Unexpected error in updateCartItem:', err);
+          return {
+            error: {
+              status: 500,
+              data: { message: "Đã xảy ra lỗi khi cập nhật giỏ hàng" },
+            },
+          };
         }
-      };
+      },
+      invalidatesTags: ["Cart"],
+    }),
 
     // ❌ Xóa sản phẩm khỏi giỏ
     deleteCartItem: builder.mutation({
