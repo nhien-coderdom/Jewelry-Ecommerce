@@ -162,13 +162,13 @@ describe('Checkout - Quy trình thanh toán', () => {
   describe('CALCULATE: Tính toán giá cả Checkout', () => {
     it('PASS: Nên tính subtotal đúng', () => {
       const cartItems = [
-        { price: 100, quantity: 2 },  // 200
-        { price: 50, quantity: 1 },   // 50
-        { price: 200, quantity: 3 },  // 600
+        { price: 9.99, quantity: 2 },  // 19.98
+        { price: 4.99, quantity: 1 },   // 4.99
+        { price: 19.99, quantity: 3 },  // 59.97
       ];
 
       const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      expect(subtotal).toBe(850);
+      expect(subtotal).toBe(84.94);
     });
 
     it('PASS: Nên tính discount đúng', () => {
@@ -276,8 +276,8 @@ describe('Checkout - Quy trình thanh toán', () => {
     it('PASS: Nên tạo order items cho mỗi cart item', async () => {
       const orderId = 1;
       const cartItems = [
-        { productId: 1, quantity: 2, price: 100 },
-        { productId: 2, quantity: 1, price: 200 },
+          { productId: 1, quantity: 2, price: 9.99 },
+          { productId: 2, quantity: 1, price: 19.99 },
       ];
 
       // Simulate creating order items
