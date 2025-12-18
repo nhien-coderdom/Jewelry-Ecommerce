@@ -78,7 +78,7 @@ const Page = () => {
 
       await updateCartItem({
         id: itemId,
-        data: { quantity: newQty },
+        quantity: newQty,
       }).unwrap();
       await refetch();
     } catch (error) {

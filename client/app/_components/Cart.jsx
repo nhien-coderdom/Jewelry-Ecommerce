@@ -31,7 +31,7 @@ const Cart = ({ data = [], onClose }) => {
     try {
       await updateCartItem({
         id: cartItemId,
-        data: { quantity: newQuantity, product: productId },
+        quantity: newQuantity,
       }).unwrap();
     } catch (error) {
       console.error("Error updating quantity:", error);
