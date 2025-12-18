@@ -270,13 +270,13 @@ const Header = () => {
                         // Kiểm tra cả success và message
                         if (result.success || result.message?.includes("successfully")) {
                           setStrapiUser({ ...strapiUser, ...updatedData });
-                          alert("✅ Cập nhật thành công!");
+                          alert("✅ Updated successfully!");
                         } else {
-                          alert("❌ Lỗi: " + (result.error || result.message || "Không thể cập nhật"));
+                          alert("❌ Error: " + (result.error || result.message || "Unable to update"));
                         }
                       } catch (err) {
                         console.error("❌ Error saving:", err);
-                        alert("❌ Lỗi kết nối server!");
+                        alert("❌ Server connection error!");
                       }
                       setOpenProfile(false);
                     }}

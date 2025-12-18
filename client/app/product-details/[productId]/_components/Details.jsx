@@ -33,7 +33,7 @@ const Details = ({ product }) => {
       const username = user?.fullName || user?.firstName || "Unknown";
 
       if (!product?.id) {
-        alert("❌ Sản phẩm không hợp lệ!");
+        alert("❌ Invalid product!");
         return;
       }
 
@@ -74,7 +74,7 @@ const Details = ({ product }) => {
       }
 
       if (!cartId) {
-        throw new Error("❌ Không tìm thấy hoặc tạo được giỏ hàng!");
+        throw new Error("❌ Unable to find or create cart!");
       }
 
       // ✅ 3. Kiểm tra nếu sản phẩm đã tồn tại trong giỏ
@@ -88,7 +88,7 @@ const Details = ({ product }) => {
         const newQty = currentQty + 1;
 
         if (newQty > stock) {
-          alert(`⚠️ Không đủ hàng trong kho! (Còn lại ${stock})`);
+          alert(`⚠️ Out of stock! (Remaining: ${stock})`);
           return;
         }
 
@@ -105,13 +105,13 @@ const Details = ({ product }) => {
         
 
         if (typeof refetchCart === "function") await refetchCart();
-        alert("✅ Đã tăng số lượng sản phẩm trong giỏ hàng!");
+        alert("✅ Product quantity increased!");
         return;
       }
 
       // ✅ 4. Nếu chưa có → thêm mới (và kiểm tra tồn kho)
       if (stock <= 0) {
-        alert("⚠️ Sản phẩm này đã hết hàng!");
+        alert("⚠️ This product is out of stock!");
         return;
       }
 
@@ -126,10 +126,10 @@ const Details = ({ product }) => {
       // ✅ 5. Làm mới dữ liệu cart
       if (typeof refetchCart === "function") await refetchCart();
 
-      alert("✅ Đã thêm sản phẩm vào giỏ hàng!");
+      alert("✅ Product added to cart!");
     } catch (error) {
       
-      alert(error?.data?.message || "Thêm vào giỏ hàng thất bại. Vui lòng thử lại.");
+      alert(error?.data?.message || "Failed to add product to cart. Please try again.");
     }
   };
 
@@ -165,7 +165,7 @@ const Details = ({ product }) => {
         Eligible For Instant Delivery
       </h2>
 
-      <h2 className="text-[24px] text-primary mb-4">{price?.toLocaleString()} $</h2>
+      <h2 className="text-[24px] text-primary mb-4">${price?.toLocaleString('en-US').replace(/,/g, '.')}</h2>
 
       <button
         onClick={handleAddToCart}
@@ -174,7 +174,7 @@ const Details = ({ product }) => {
       >
         <ShoppingCart size={20} />
         <span className="text-sm font-medium">
-          {isAdding ? "Đang thêm..." : "Add To Cart"}
+          {isAdding ? "Adding..." : "Add To Cart"}
         </span>
       </button>
     </div>
