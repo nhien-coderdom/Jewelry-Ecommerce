@@ -248,7 +248,7 @@ describe('Format giá tiền', () => {
   describe('formatPrice', () => {
     it('PASS: Nên format USD đúng', () => {
       const result = formatPrice(1000000, 'VND');
-      expect(result).toBe('1.000.000 $');
+      expect(result).toBe('$1.000.000');
     });
 
     it('PASS: Nên format USD đúng', () => {

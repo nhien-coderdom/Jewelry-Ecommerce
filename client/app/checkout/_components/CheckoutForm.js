@@ -79,7 +79,7 @@ export default function CheckoutForm({ amount, clientSecret }) {
 
       if (error) throw error;
       if (paymentIntent.status !== "succeeded") {
-        throw new Error("Thanh toán chưa hoàn tất.");
+        throw new Error("Payment was not completed.");
       }
 
       // ✅ Save Order to Strapi
@@ -103,7 +103,7 @@ export default function CheckoutForm({ amount, clientSecret }) {
 
       window.location.href = "/payment-confirm";
     } catch (err) {
-      setErrorMsg(err.message || "Có lỗi xảy ra, vui lòng thử lại.");
+      setErrorMsg(err.message || "An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -114,10 +114,10 @@ export default function CheckoutForm({ amount, clientSecret }) {
 
       {/* 🛒 CART SUMMARY — giữ nguyên UI */}
       <div className="rounded-lg border p-4 bg-white shadow">
-        <h3 className="font-bold text-lg mb-4">Tóm tắt đơn hàng</h3>
+        <h3 className="font-bold text-lg mb-4">Order Summary</h3>
 
         {orderItems.length === 0 ? (
-          <p className="text-gray-500 text-sm">Giỏ hàng trống...</p>
+          <p className="text-gray-500 text-sm">Your cart is empty...</p>
         ) : (
           orderItems.map((item, i) => (
             <div key={i} className="flex items-center space-x-4 mb-4">
@@ -128,18 +128,18 @@ export default function CheckoutForm({ amount, clientSecret }) {
               />
               <div className="flex-1">
                 <p className="font-medium">{item.title}</p>
-                <p className="text-sm text-gray-600">SL: {item.quantity}</p>
+                <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
               </div>
               <span className="font-bold">
-                {(item.price * item.quantity).toLocaleString()} $
+                ${(item.price * item.quantity).toLocaleString('en-US').replace(/,/g, '.')}
               </span>
             </div>
           ))
         )}
 
         <div className="border-t pt-3 mt-3 flex justify-between font-bold text-lg">
-          <span>Tổng cộng</span>
-          <span>{Number(amount).toLocaleString()} $</span>
+          <span>Total</span>
+          <span>${Number(amount).toLocaleString('en-US').replace(/,/g, '.')}</span>
         </div>
       </div>
 
@@ -154,7 +154,7 @@ export default function CheckoutForm({ amount, clientSecret }) {
             disabled={!stripe || !elements || loading}
             className="mt-4 w-full bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-lg font-semibold disabled:bg-gray-400"
           >
-            {loading ? "Đang xử lý..." : `Thanh toán ${Number(amount).toLocaleString()} $`}
+            {loading ? "Processing..." : `Pay ${Number(amount).toLocaleString('en-US').replace(/,/g, '.')} $`}
           </button>
         </form>
       </div>

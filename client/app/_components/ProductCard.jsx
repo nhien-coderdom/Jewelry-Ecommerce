@@ -30,7 +30,7 @@ const ProductCard = ({ product }) => {
             <h2 className="text-[12px] text-gray-400 flex  gap-1 items-center">
               <List className="w-4 h-4" /> {product?.attributes?.category}
             </h2>
-            <h2>{product?.attributes?.price} $</h2>
+            <h2>${(product?.attributes?.price || 0).toLocaleString('en-US').replace(/,/g, '.')}</h2>
           </div>
         </div>
       </div>

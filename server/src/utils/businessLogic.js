@@ -136,7 +136,8 @@ function formatPrice(price, currency = 'VND') {
   }
   
   if (currency === 'VND') {
-    return price.toLocaleString('vi-VN') + ' $';  // Đổi từ ₫ thành $
+    const formatted = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return '$' + formatted;
   } else if (currency === 'USD') {
     return '$' + price.toFixed(2);
   }

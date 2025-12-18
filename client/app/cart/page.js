@@ -150,7 +150,7 @@ const Page = () => {
                               <dd className="capitalize">
                                 {product?.category || "Other"}
                               </dd>
-                              <dd>{product?.price || 0} $</dd>
+                              <dd>${(product?.price || 0).toLocaleString('en-US').replace(/,/g, '.')}</dd>
                             </dl>
                           </div>
 
@@ -207,7 +207,7 @@ const Page = () => {
                     <dl className="space-y-0.5 text-sm text-gray-200">
                       <div className="flex justify-between text-base font-medium">
                         <dt>Total</dt>
-                        <dd>${total}</dd>
+                        <dd>${total.toLocaleString('en-US').replace(/,/g, '.')}</dd>
                       </div>
                     </dl>
 

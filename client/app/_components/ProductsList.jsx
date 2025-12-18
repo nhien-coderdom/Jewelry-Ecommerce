@@ -40,7 +40,7 @@ const ProductsList = ({ products, searchTerm }) => {
                     <List className="w-4 h-4" />
                     {product?.attributes?.category?.data?.attributes?.name || "N/A"}
                   </p>
-                  <p>{product?.attributes?.price || 0} $</p>
+                  <p>${(product?.attributes?.price || 0).toLocaleString('en-US').replace(/,/g, '.')}</p>
                 </div>
               </div>
             </div>

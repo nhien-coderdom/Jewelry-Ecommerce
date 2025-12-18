@@ -63,8 +63,8 @@ const MyOrdersPage = () => {
   };
 
   const formatCurrency = (amount) => {
-    const formatted = new Intl.NumberFormat("vi-VN").format(amount);
-    return formatted + ' $';
+    const formatted = amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return '$' + formatted;
   };
 
   const getStatusColor = (status) => {
